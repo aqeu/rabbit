@@ -18,10 +18,8 @@
     #include <sys/select.h>
     #define CLEAR "clear"
     #define SLEEP(ms) usleep((ms) * 1000)
-    
     static struct termios g_oldt;
     static int g_termSaved = 0;
-    
     void saveTerminal() {
         if (!g_termSaved) {
             tcgetattr(STDIN_FILENO, &g_oldt);
@@ -56,7 +54,6 @@
         return ch;
     }
 #endif
-
 #define GRID_WIDTH 30
 #define GRID_HEIGHT 20
 #define MAX_POWERUPS 8
@@ -76,7 +73,6 @@
 #define COLOR_CYAN    "\033[36m"
 #define COLOR_WHITE   "\033[37m"
 #define COLOR_BOLD    "\033[1m"
-
 typedef struct { int x, y; } Position;
 typedef enum { POWERUP_SPEED, POWERUP_SHIELD, POWERUP_FREEZE, POWERUP_MAGNET, POWERUP_DOUBLE } PowerUpType;
 typedef struct { int x, y, type, active; int duration; } PowerUp;
@@ -92,7 +88,6 @@ typedef struct {
     int level;
     time_t date;
 } HighScore;
-
 int score = 0;
 int level = 1;
 int timeRemaining = GAME_TIMEOUT;
@@ -132,7 +127,6 @@ int enemyCount = 0;
 time_t startTime;
 time_t lastEnemyMove;
 int gameRunning = 1;
-
 void clearScreen() { system(CLEAR); }
 void setColor(const char* color) { printf("%s", color); }
 void hideCursor() {
@@ -170,7 +164,6 @@ void gotoxy(int x, int y) {
 
 int kbhit() { return kbhit_impl(); }
 int getch() { return getch_impl(); }
-
 void spawnParticles(int x, int y, int count, char symbol) {
     for (int i = 0; i < count && particleCount < MAX_PARTICLES; i++) {
         particles[particleCount].x = x;
@@ -281,7 +274,6 @@ void displayHighScores() {
     printf("     |                    TOP 10 HIGH SCORES                    |\n");
     printf("     +==========================================================+\n");
     setColor(COLOR_RESET);
-    
     if (highScoreCount == 0) {
         printf("     |              No high scores yet. Play a game!            |\n");
     } else {
@@ -353,9 +345,7 @@ void generateMaze() {
     for (int i = 1; i <= 2; i++)
         for (int j = 1; j <= 2; j++)
             if (i < GRID_HEIGHT-1 && j < GRID_WIDTH-1) maze[i][j] = 0;
-    
     maze[GRID_HEIGHT - 2][GRID_WIDTH - 2] = 0;
-    
     int x = 1, y = 1;
     while (x < GRID_WIDTH - 2 || y < GRID_HEIGHT - 2) {
         maze[y][x] = 0;
@@ -368,7 +358,6 @@ void generateMaze() {
         }
     }
     maze[GRID_HEIGHT - 2][GRID_WIDTH - 2] = 0;
-    
     for (int i = 1; i < GRID_HEIGHT - 1; i++) {
         for (int j = 1; j < GRID_WIDTH - 1; j++) {
             if (maze[i][j] == 1) {
@@ -391,19 +380,14 @@ int isValidPosition(int x, int y) {
 
 int isOccupied(int x, int y, int includeRabbit) {
     if (includeRabbit && x == rabbitX && y == rabbitY) return 1;
-    
     for (int i = 0; i < carrotCount; i++)
         if (!carrots[i].collected && carrots[i].x == x && carrots[i].y == y) return 1;
-    
     for (int i = 0; i < obstacleCount; i++)
         if (obstacles[i].active && obstacles[i].x == x && obstacles[i].y == y) return 1;
-    
     for (int i = 0; i < powerupCount; i++)
         if (powerups[i].active && powerups[i].x == x && powerups[i].y == y) return 1;
-    
     for (int i = 0; i < enemyCount; i++)
         if (enemies[i].active && enemies[i].x == x && enemies[i].y == y) return 1;
-    
     return 0;
 }
 
@@ -690,7 +674,6 @@ void displayGame() {
     printf("  ");
     for (int j = 0; j < GRID_WIDTH; j++) printf("--");
     printf("\n");
-    
     setColor(COLOR_WHITE);
     printf("\n  R=Rabbit  *=Carrot(%dpts)  E=Enemy  X=Rock  ~=Puddle  ^=Spike  O=Moving\n", 
            25 + (level * 5));
@@ -711,7 +694,6 @@ void displayGame() {
 
 void updateTimers() {
     if (gamePaused) return;
-    
     if (hasSuperSpeed && speedTimer > 0) {
         speedTimer--;
         if (speedTimer == 0) hasSuperSpeed = 0;
@@ -1105,7 +1087,6 @@ void displayGameOver() {
     printf("     |                      GAME OVER!                          |\n");
     printf("     +==========================================================+\n");
     setColor(COLOR_RESET);
-
     printf("\n");
     setColor(COLOR_YELLOW);
     printf("     Final Score: %d\n", score);
@@ -1113,7 +1094,6 @@ void displayGameOver() {
     printf("     Carrots Collected: %d\n", totalCarrotsCollected);
     printf("     Total Moves: %d\n", totalMoves);
     setColor(COLOR_RESET);
-    
     if (level > MAX_LEVELS) {
         setColor(COLOR_GREEN);
         printf("\n     *** CONGRATULATIONS! You completed all levels! ***\n");
@@ -1202,7 +1182,6 @@ int mainMenu() {
         "Quit Game"
     };
     int numItems = 4;
-    
     while (menuActive) {
         clearScreen();
         setColor(COLOR_CYAN);
@@ -1215,7 +1194,6 @@ int mainMenu() {
         printf("     |                                                          |\n");
         printf("     +==========================================================+\n");
         setColor(COLOR_RESET);
-        
         for (int i = 0; i < numItems; i++) {
             if (i == selection) {
                 setColor(COLOR_YELLOW);
@@ -1231,7 +1209,6 @@ int mainMenu() {
         printf("     +==========================================================+\n");
         setColor(COLOR_RESET);
         printf("\n     Use W/S or arrow keys, Enter to select\n");
-        
         int ch = getch();
         if (ch == 224 || ch == 0) {
             ch = getch();
